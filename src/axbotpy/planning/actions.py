@@ -42,6 +42,7 @@ class MoveAction:
         coordinates: List[List[float]] = None,
         target_ori=None,
         detour_tolerance=None,
+        target_accuracy=0,
     ) -> None:
         self.id = -1
         self.target = target
@@ -50,6 +51,7 @@ class MoveAction:
         self.sleep_duration = 0
         self.target_ori = target_ori
         self.detour_tolerance = detour_tolerance
+        self.target_accuracy = target_accuracy
 
     def to_json(self) -> any:
         rtn = {"type": self.type.value}
@@ -75,7 +77,8 @@ class MoveAction:
             rtn = {**rtn, "detour_tolerance": self.detour_tolerance}
 
         # add accuracy
-        rtn = {**rtn, "target_accuracy": 0.01}
+        if self.target_accuracy != 0:
+            rtn = {**rtn, "target_accuracy": 0.01}
 
         return rtn
 
