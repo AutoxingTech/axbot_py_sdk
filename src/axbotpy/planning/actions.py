@@ -78,7 +78,7 @@ class MoveAction:
 
         # add accuracy
         if self.target_accuracy != 0:
-            rtn = {**rtn, "target_accuracy": 0.01}
+            rtn = {**rtn, "target_accuracy": self.target_accuracy}
 
         return rtn
 
