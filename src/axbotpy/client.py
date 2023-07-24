@@ -3,6 +3,8 @@ import time
 
 import requests
 
+from .device_info import DeviceInfo
+from .exceptions import AxException
 from .planning.actions import MoveAction, MoveType
 from .planning.state import PlanningState
 from .ws_client import TopicName, WsClient
@@ -14,12 +16,19 @@ class Client:
         self.__ws: WsClient
         self.__last_action = None
         self.__action_id = -1
-        self.__planning_state = PlanningState()
+        self.device_info: DeviceInfo = None
+        self.planning_state = PlanningState()
 
     def connect(self):
-        def on_topic_received(name: str, msg: str):
-            if msg["topic"] == TopicName.PLANNING_STATE:
-                self.__planning_state = PlanningState(msg)
+        info = self.get_device_info()
+        if info == None:
+            raise AxException("Failed to connect to robot")
+
+        self.device_info = info
+
+        def on_topic_received(name: str, msg: dict):
+            if name == TopicName.PLANNING_STATE:
+                self.planning_state = PlanningState(msg)
 
         self.__ws = WsClient(on_topic_received, self.__base_url.replace("http://", "ws://"))
 
@@ -27,15 +36,19 @@ class Client:
         self.__ws.disconnect()
         self.__ws = None
 
-    @property
-    def planning_state(self) -> PlanningState:
-        return self.__planning_state
+    def get_device_info(self) -> DeviceInfo or None:
+        try:
+            res = requests.get(self.__base_url + "/device/info")
+        except requests.exceptions.ConnectionError:
+            logging.error("Failed to connect to robot")
+            return None
 
-    def device_info() -> DeviceInfo:
-        r = requests.post(
-            "http://127.0.0.1:8000/chassis/moves",
-            json=request_data,
-        )
+        if not res.ok:
+            logging.error("Failed to get device info")
+            return None
+
+        info = DeviceInfo(res.json())
+        return info
 
     def move(self, action: MoveAction) -> bool:
         if action.type == MoveType.SLEEP:
@@ -45,7 +58,7 @@ class Client:
         request_data = action.make_request_data(self.__last_action)
 
         r = requests.post(
-            "http://127.0.0.1:8000/chassis/moves",
+            self.__base_url + "/chassis/moves",
             json=request_data,
         )
 
@@ -53,6 +66,8 @@ class Client:
             logging.error("Failed to create move action", r)
             return False
 
-        self.__action_id = r["id"]
+        action.id = r.json()["id"]
+
+        self.__last_action = action
 
         return True

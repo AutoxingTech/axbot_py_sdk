@@ -1,7 +1,7 @@
-from enum import Enum
 from typing import List
 
-from src.axbotpy.common.mixins import DictConvertMixin
+from .common.mixins import DictConvertMixin
+from .exceptions import AxException
 
 
 class DeviceField(DictConvertMixin):
@@ -41,8 +41,11 @@ class CapsField(DictConvertMixin):
 
 
 class DeviceInfo:
-    def __init__(self, msg: any) -> None:
-        self.axbot_version = msg["axbot_version"]
-        self.device = DeviceField(msg["device"])
-        self.robot = RobotField(msg["robot"])
-        self.caps = CapsField(msg["caps"])
+    def __init__(self, msg: dict) -> None:
+        try:
+            self.axbot_version = msg["axbot_version"]
+            self.device = DeviceField(msg["device"])
+            self.robot = RobotField(msg["robot"])
+            self.caps = CapsField(msg["caps"])
+        except KeyError as e:
+            raise AxException("Device Info Parse Error") from e

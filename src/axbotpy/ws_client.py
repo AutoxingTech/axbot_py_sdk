@@ -6,12 +6,12 @@ from typing import Callable
 import websocket
 
 
-class TopicName(Enum):
+class TopicName:
     PLANNING_STATE = "/planning_state"
 
 
 class WsClient:
-    def __init__(self, on_topic_received: Callable[[str, str], None], base_url: str = "ws://localhost:8000") -> None:
+    def __init__(self, on_topic_received: Callable[[str, dict], None], base_url: str = "ws://localhost:8000") -> None:
         self.__on_topic_received = on_topic_received
         self.__url = base_url + "/ws/v2/topics"
         self.__thread = None
@@ -34,7 +34,7 @@ class WsClient:
 
         def __on_open(ws: websocket.WebSocketApp):
             print("Opened connection")
-            ws.send(json.dumps({"enable_topic": "/planning_state"}))
+            ws.send(json.dumps({"enable_topic": TopicName.PLANNING_STATE}))
 
         self.__ws = websocket.WebSocketApp(
             self.__url,

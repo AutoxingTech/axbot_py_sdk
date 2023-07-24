@@ -1,8 +1,7 @@
 import math
 from typing import List
 
-from axbotpy.planning import AlongGivenRouteMoveAction, MoveAction, SleepAction
-from .types import AlongCentralLineMoveAction, AlongGivenRouteMoveAction, MoveAction, SleepAction
+from axbotpy.planning.actions import AlongGivenRouteMoveAction, MoveAction, SleepAction
 
 # hh-19
 ACTIONS: List[MoveAction] = [

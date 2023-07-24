@@ -1,0 +1,2 @@
+class AxException(Exception):
+    pass

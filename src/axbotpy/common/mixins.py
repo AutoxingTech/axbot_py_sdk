@@ -11,6 +11,9 @@ def enum_from_string(cls: Enum, s: str):
 
 class DictConvertMixin:
     def __init__(self, d: dict) -> None:
+        if d == None:
+            return
+
         for key, value in d.items():
             old_value = getattr(self, key, None)
             if old_value != None and isinstance(old_value, Enum):

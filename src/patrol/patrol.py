@@ -3,10 +3,10 @@ import json
 import time
 
 import requests
-import rospy
 
-from axbotpy.planning import MoveAction, MoveType
-from src.axbotpy.ws_client import WsClient
+from axbotpy.app_framework import App, Rate
+from axbotpy.client import Client
+from axbotpy.planning.actions import MoveActionState, MoveType
 
 from .actions.obstacle import ACTIONS
 
@@ -19,7 +19,7 @@ def die(msg: str, res: requests.Response = None):
         print(f"{msg}. Response = {res_text}")
     else:
         print(msg)
-    rospy.signal_shutdown(msg)
+    App.shutdown(1)
 
 
 class Progress:
@@ -35,62 +35,52 @@ class Progress:
 
 def main():
     progress = Progress()
-    headers = {"Secret": "dRw6JGyzFFwKNfFPQ8FFF"}
 
-    rospy.init_node("patrol_node")
-    ws = WsClient()
+    App.init_node("patrol_node")
+    client = Client("http://localhost:8000")
 
-    last_action: MoveAction = None
-    while not rospy.is_shutdown():
+    client.connect()
+
+    while App.ok():
         for action in ACTIONS:
-            if rospy.is_shutdown():
+            if not App.ok():
                 break
 
             if action.type == MoveType.SLEEP:
                 time.sleep(action.sleep_duration)
                 continue
 
-            request_data = action.make_request_data(last_action)
+            if not client.move(action):
+                die("Failed to create move action")
+                return
 
-            r = requests.post(
-                "http://127.0.0.1:8000/chassis/moves",
-                headers=headers,
-                json=request_data,
-            )
-
-            if not r.ok:
-                die("Failed to create move action", r)
-            else:
-                action_id = r.json()["id"]
-                print(f"Action {action_id} {action} ...", end="")
+            print(f"Action {action.id} {action} created")
 
             # wait for action to finish
-            while not rospy.is_shutdown():
-                r = requests.get(
-                    f"http://127.0.0.1:8000/chassis/moves/{action_id}",
-                    headers=headers,
-                )
-                if not r.ok:
-                    die("Failed to get move action", r)
+            rate = Rate(4)
+            while rate.ok():
+                planning_state = client.planning_state
+                if planning_state.action_id != action.id:
+                    # other action, ignore
+                    print(f"\r  Waiting...", end="")
+                    continue
 
-                data = r.json()
-                state = data["state"]
-
-                if state == "moving":
+                if planning_state.move_state in [MoveActionState.IDLE, MoveActionState.MOVING]:
                     print(
-                        f"\rAction {action_id} {action} ... {progress}, distance = {ws.planning_state.remaining_distance}",
+                        f"\r  {planning_state.move_state.value} ... {progress}, distance = {round(client.planning_state.remaining_distance, 2)}",
                         end="",
                     )
                     continue
-                if state == "succeeded":
-                    print("succeeded")
+
+                if planning_state.move_state == MoveActionState.SUCCEEDED:
+                    print(" succeeded")
                     break
-                die(f"Action {action_id} {state}")
+
+                die(f"Action {action.id} {planning_state.move_state.value}")
                 break
 
-            last_action = action
-
-    ws.disconnect()
+    client.disconnect()
+    return App.shutdown_code()
 
 
 if __name__ == "__main__":

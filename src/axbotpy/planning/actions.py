@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import List
 
-from axbotpy.common.mixins import StringEnumMixin
+from ..common.mixins import StringEnumMixin
 
 
 def enum_from_string(cls: Enum, s: str):
@@ -43,6 +43,7 @@ class MoveAction:
         target_ori=None,
         detour_tolerance=None,
     ) -> None:
+        self.id = -1
         self.target = target
         self.type = type
         self.coordinates = coordinates
