@@ -13,7 +13,7 @@ from .ws_client import TopicName, WsClient
 class Client:
     def __init__(self, base_url: str = "http://localhost:8000") -> None:
         self.__base_url = base_url
-        self.__ws: WsClient
+        self.__ws: WsClient = None
         self.__last_action = None
         self.__action_id = -1
         self.device_info: DeviceInfo = None
@@ -22,7 +22,7 @@ class Client:
     def connect(self):
         info = self.get_device_info()
         if info == None:
-            raise AxException("Failed to connect to robot")
+            raise AxException(f"Failed to connect to robot at {self.__base_url}")
 
         self.device_info = info
 
@@ -33,14 +33,15 @@ class Client:
         self.__ws = WsClient(on_topic_received, self.__base_url.replace("http://", "ws://"))
 
     def disconnect(self):
-        self.__ws.disconnect()
-        self.__ws = None
+        if self.__ws != None:
+            self.__ws.disconnect()
+            self.__ws = None
 
     def get_device_info(self) -> DeviceInfo or None:
         try:
             res = requests.get(self.__base_url + "/device/info")
         except requests.exceptions.ConnectionError:
-            logging.error("Failed to connect to robot")
+            logging.error("Failed to get device info")
             return None
 
         if not res.ok:
