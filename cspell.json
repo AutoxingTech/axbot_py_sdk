@@ -1,0 +1,29 @@
+{
+    "version": "0.2",
+    "ignorePaths": [],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
+        "costmap",
+        "polyline",
+        "rosbag",
+        "rosnode",
+        "rosout",
+        "rospy",
+        "travelled",
+        "voxel",
+        "wlan"
+    ],
+    "ignoreWords": [
+        "aiorospy",
+        "autouse",
+        "axbot",
+        "ns",
+        "RCSS",
+        "srvs",
+        "ssid",
+        "succ",
+        "thiz"
+    ],
+    "import": []
+}
