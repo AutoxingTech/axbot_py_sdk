@@ -21,7 +21,7 @@ class Progress:
         return self.icons[self.step]
 
 
-class PatrolApp:
+class Patrol:
     def __init__(self) -> None:
         App.init_node("patrol_node")
         self.client = Client("http://localhost:8000")
@@ -35,8 +35,8 @@ class PatrolApp:
             if not App.ok():
                 break
 
+            # make move action
             self.client.move(action)
-
             print(f"Action {action.id} {action} created")
 
             # wait for action to finish
@@ -64,12 +64,11 @@ class PatrolApp:
 
     def shutdown(self):
         self.client.disconnect()
-        return App.shutdown_code()
 
 
 def main():
     try:
-        patrol = PatrolApp()
+        patrol = Patrol()
         patrol.run_forever()
     except exceptions.AxException as e:
         print(str(e))
