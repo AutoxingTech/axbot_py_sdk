@@ -50,7 +50,7 @@ class Client:
         info = DeviceInfo(res.json())
         return info
 
-    def move(self, action: MoveAction) -> bool:
+    def move(self, action: MoveAction):
         if action.type == MoveType.SLEEP:
             time.sleep(action.sleep_duration)
             return
@@ -64,10 +64,8 @@ class Client:
 
         if not r.ok:
             logging.error("Failed to create move action", r)
-            return False
+            raise AxException("Failed to make the move")
 
         action.id = r.json()["id"]
 
         self.__last_action = action
-
-        return True

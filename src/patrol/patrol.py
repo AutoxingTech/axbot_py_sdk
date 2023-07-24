@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+import itertools
 import json
-import time
+import sys
 
 import requests
 
+from axbotpy import exceptions
 from axbotpy.app_framework import App, Rate
 from axbotpy.client import Client
 from axbotpy.planning.actions import MoveActionState, MoveType
@@ -41,47 +43,44 @@ def main():
 
     client.connect()
 
-    while App.ok():
-        for action in ACTIONS:
-            if not App.ok():
-                break
+    for action in itertools.cycle(ACTIONS):
+        if not App.ok():
+            break
 
-            if action.type == MoveType.SLEEP:
-                time.sleep(action.sleep_duration)
+        client.move(action)
+
+        print(f"Action {action.id} {action} created")
+
+        # wait for action to finish
+        rate = Rate(4)
+        while rate.ok():
+            planning_state = client.planning_state
+            if planning_state.action_id != action.id:
+                # other action, ignore
+                print(f"\r  Waiting...", end="")
                 continue
 
-            if not client.move(action):
-                die("Failed to create move action")
-                return
+            if planning_state.move_state in [MoveActionState.IDLE, MoveActionState.MOVING]:
+                print(
+                    f"\r  {planning_state.move_state.value} ... {progress}, distance = {round(client.planning_state.remaining_distance, 2)}",
+                    end="",
+                )
+                continue
 
-            print(f"Action {action.id} {action} created")
-
-            # wait for action to finish
-            rate = Rate(4)
-            while rate.ok():
-                planning_state = client.planning_state
-                if planning_state.action_id != action.id:
-                    # other action, ignore
-                    print(f"\r  Waiting...", end="")
-                    continue
-
-                if planning_state.move_state in [MoveActionState.IDLE, MoveActionState.MOVING]:
-                    print(
-                        f"\r  {planning_state.move_state.value} ... {progress}, distance = {round(client.planning_state.remaining_distance, 2)}",
-                        end="",
-                    )
-                    continue
-
-                if planning_state.move_state == MoveActionState.SUCCEEDED:
-                    print(" succeeded")
-                    break
-
-                die(f"Action {action.id} {planning_state.move_state.value}")
+            if planning_state.move_state == MoveActionState.SUCCEEDED:
+                print(" succeeded")
                 break
+
+            die(f"Action {action.id} {planning_state.move_state.value}")
+            break
 
     client.disconnect()
     return App.shutdown_code()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except exceptions.AxException as e:
+        print(str(e))
+        sys.exit(1)
