@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Django",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "runserver",
+                "0:8000",
+                "--settings",
+                "axpc.settings_for_testing"
+            ],
+            "django": true,
+            "env": {
+                "CMAKE_PREFIX_PATH": "/opt/ax/platform:/opt/ros/noetic",
+                "LD_LIBRARY_PATH": "/opt/ax/platform/lib:/opt/ros/noetic/lib",
+                "PATH": "/opt/ax/platform/bin:/opt/ros/noetic/bin:/home/simba/.local/bin:/home/simba/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/TortoiseGit/bin:/mnt/c/Strawberry/c/bin:/mnt/c/Strawberry/perl/site/bin:/mnt/c/Strawberry/perl/bin:/mnt/c/Program Files/nodejs/:/mnt/c/Program Files/CMake/bin:/mnt/c/Program Files/LLVM/bin:/mnt/c/Program Files/PuTTY/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/kingsimba/.cargo/bin:/mnt/c/Users/kingsimba/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/kingsimba/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/kingsimba/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/kingsimba/AppData/Roaming/npm:/mnt/c/Users/kingsimba/.cargo/bin:/mnt/c/Users/kingsimba/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/Scripts:/snap/bin",
+                "PKG_CONFIG_PATH": "/opt/ax/platform/lib/pkgconfig:/opt/ros/noetic/lib/pkgconfig",
+                "PYTHONPATH": "/opt/ax/platform/lib/python2.7/dist-packages:/opt/ros/noetic/lib/python2.7/dist-packages",
+                "ROS_DISTRO": "noetic",
+                "ROS_ETC_DIR": "/opt/ros/noetic/etc/ros",
+                "ROS_MASTER_URI": "http://localhost:11311",
+                "ROS_PACKAGE_PATH": "/opt/ax/platform/share:/opt/ros/noetic/share",
+                "ROS_PYTHON_VERSION": "2",
+                "ROS_ROOT": "/opt/ros/noetic/share/ros",
+                "ROS_VERSION": "1"
+            },
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -1,0 +1,2 @@
+**/*.pbstream filter=lfs diff=lfs merge=lfs -text
+test_data/*.png filter=lfs diff=lfs merge=lfs -text
