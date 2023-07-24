@@ -2,8 +2,17 @@
 from enum import Enum
 from typing import List
 
+from axbotpy.common.mixins import StringEnumMixin
 
-class MoveActionState(Enum):
+
+def enum_from_string(cls: Enum, s: str):
+    for state in cls.__members__.values():
+        if state.value == s:
+            return state
+    raise ValueError(f"Invalid {cls.name} string")
+
+
+class MoveActionState(StringEnumMixin, Enum):
     IDLE = "IDLE".lower()
     MOVING = "MOVING".lower()
     OSCILLATING = "OSCILLATING".lower()
@@ -11,12 +20,10 @@ class MoveActionState(Enum):
     FAILED = "FAILED".lower()
     CANCELLED = "CANCELLED".lower()
 
-    @staticmethod
-    def from_string(s: str):
-        for state in MoveActionState.__members__.values():
-            if state.value == s:
-                return state
-        raise ValueError("Invalid MovingState string")
+
+class Color(StringEnumMixin, Enum):
+    RED = "RED".lower()
+    GREEN = "GREEN".lower()
 
 
 class MoveType(Enum):

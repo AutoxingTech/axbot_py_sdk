@@ -1,4 +1,8 @@
-from .actions import AlongGivenRouteMoveAction, MoveAction
+from .actions import AlongGivenRouteMoveAction, MoveAction, MoveActionState
+
+
+def test_move_action_state():
+    assert MoveActionState.from_string("moving") == MoveActionState.MOVING
 
 
 def test_make_request_data():

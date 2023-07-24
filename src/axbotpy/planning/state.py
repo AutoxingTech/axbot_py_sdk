@@ -1,7 +1,7 @@
 import inspect
 from enum import Enum
 
-from axbotpy.common.conversion import DictConvertMixin
+from src.axbotpy.common.mixins import DictConvertMixin
 
 from .actions import MoveActionState
 

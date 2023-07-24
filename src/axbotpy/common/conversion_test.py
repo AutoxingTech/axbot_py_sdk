@@ -1,7 +1,7 @@
 import inspect
 from enum import Enum
 
-from .conversion import DictConvertMixin
+from .mixins import DictConvertMixin
 
 
 class Color(Enum):
