@@ -298,3 +298,17 @@ def test_get_turn_angle():
 
     turn = get_turn_angle(-3.121977923887787, 3.128226898163481)
     assert turn == pytest.approx(-0.033, 0.01)
+
+
+def test_convert_pose_to_another_map():
+    elevator_pose_in_map_1 = Pose2(Vector2(3, 5), 0)
+    elevator_pose_in_map_2 = Pose2(Vector2(10, 6), math.pi * 3 / 2)
+
+    current_pose_in_map_1 = Pose2(Vector2(3, 6), math.pi)
+    current_pose_in_map_2 = elevator_pose_in_map_2 * elevator_pose_in_map_1.inverse() * current_pose_in_map_1
+
+    print("elevator_pose_in_map_1", elevator_pose_in_map_1)
+    print("elevator_pose_in_map_2", elevator_pose_in_map_2)
+
+    print("current_pose_in_map_1", current_pose_in_map_1)
+    print("current_pose_in_map_2", current_pose_in_map_2)
