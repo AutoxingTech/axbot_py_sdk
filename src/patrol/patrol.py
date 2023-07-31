@@ -2,8 +2,8 @@
 import itertools
 import sys
 
+from app_framework import App, Rate
 from axbotpy import exceptions
-from axbotpy.app_framework import App, Rate
 from axbotpy.client import Client
 from axbotpy.planning.actions import MoveActionState
 

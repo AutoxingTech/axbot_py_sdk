@@ -5,13 +5,6 @@ from typing import List
 from ..common.mixins import StringEnumMixin
 
 
-def enum_from_string(cls: Enum, s: str):
-    for state in cls.__members__.values():
-        if state.value == s:
-            return state
-    raise ValueError(f"Invalid {cls.name} string")
-
-
 class MoveActionState(StringEnumMixin, Enum):
     IDLE = "IDLE".lower()
     MOVING = "MOVING".lower()
@@ -19,11 +12,6 @@ class MoveActionState(StringEnumMixin, Enum):
     SUCCEEDED = "SUCCEEDED".lower()
     FAILED = "FAILED".lower()
     CANCELLED = "CANCELLED".lower()
-
-
-class Color(StringEnumMixin, Enum):
-    RED = "RED".lower()
-    GREEN = "GREEN".lower()
 
 
 class MoveType(Enum):
@@ -35,6 +23,10 @@ class MoveType(Enum):
 
 
 class MoveAction:
+    """
+    A move action, to instruct the robot to go somewhere.
+    """
+
     def __init__(
         self,
         target: List[float] = None,
@@ -53,7 +45,7 @@ class MoveAction:
         self.detour_tolerance = detour_tolerance
         self.target_accuracy = target_accuracy
 
-    def to_json(self) -> any:
+    def to_dict(self) -> any:
         rtn = {"type": self.type.value}
         if self.target != None:
             rtn = {
@@ -83,7 +75,7 @@ class MoveAction:
         return rtn
 
     def make_request_data(self, last_action: "MoveAction") -> any:
-        data = self.to_json()
+        data = self.to_dict()
         if last_action == None or self.coordinates == None:
             return data
 

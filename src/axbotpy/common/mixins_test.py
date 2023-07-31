@@ -5,13 +5,16 @@ from .mixins import DictConvertMixin
 
 
 class Color(Enum):
+    NONE = "none"
     RED = "red"
     GREEN = "green"
 
 
 class MyClass(DictConvertMixin):
     def __init__(self, obj: dict = None) -> None:
-        self.color = Color.RED
+        # The enum member must have a default value,
+        # because DictConvertMixin uses it to identify it as an enumeration.
+        self.color = Color.NONE
 
         super().__init__(obj)
 

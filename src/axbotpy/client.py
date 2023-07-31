@@ -11,6 +11,10 @@ from .ws_client import TopicName, WsClient
 
 
 class Client:
+    """
+    The most important class of the SDK, to talks to the robot
+    """
+
     def __init__(self, base_url: str = "http://localhost:8000") -> None:
         self.__base_url = base_url
         self.__ws: WsClient = None

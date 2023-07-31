@@ -11,6 +11,10 @@ class TopicName:
 
 
 class WsClient:
+    """
+    The websocket client which receives realtime information of the robot
+    """
+
     def __init__(self, on_topic_received: Callable[[str, dict], None], base_url: str = "ws://localhost:8000") -> None:
         self.__on_topic_received = on_topic_received
         self.__url = base_url + "/ws/v2/topics"
