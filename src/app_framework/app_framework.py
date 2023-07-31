@@ -4,7 +4,7 @@ import time
 
 class App:
     """
-    App framework without ROS
+    App simple framework to control the lifecycle of a python app
     """
 
     node_name: str = None
@@ -39,7 +39,15 @@ class App:
 
 
 class Rate:
-    def __init__(self, rate, timeout=None) -> None:
+    """
+    To repeatedly run some code in a loop.
+
+    rate = Rate(10) # 10hz
+    while rate.ok():
+        pass
+    """
+
+    def __init__(self, rate: float, timeout=None) -> None:
         self.__interval = 1.0 / rate
         now = time.time()
         self.__last_stamp = now

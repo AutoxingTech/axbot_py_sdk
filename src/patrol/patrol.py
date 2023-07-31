@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import itertools
 import sys
 
@@ -10,7 +11,7 @@ from axbotpy.planning.actions import MoveActionState
 from .actions.obstacle import ACTIONS
 
 
-class Progress:
+class ProgressIndicator:
     step = 0
     icons = "/-\\|/-\\|"
 
@@ -22,27 +23,31 @@ class Progress:
 
 
 class Patrol:
-    def __init__(self) -> None:
+    """
+    Move the robot with predefined actions
+    """
+
+    def __init__(self, base_url: str) -> None:
         App.init_node("patrol_node")
-        self.client = Client("http://localhost:8000")
+        self.__client = Client(base_url=base_url)
 
     def run_forever(self):
-        progress = Progress()
+        progress = ProgressIndicator()
 
-        self.client.connect()
+        self.__client.connect()
 
         for action in itertools.cycle(ACTIONS):
             if not App.ok():
                 break
 
             # make move action
-            self.client.move(action)
+            self.__client.move(action)
             print(f"Action {action.id} {action} created")
 
             # wait for action to finish
             rate = Rate(4)
             while rate.ok():
-                planning_state = self.client.planning_state
+                planning_state = self.__client.planning_state
                 if planning_state.action_id != action.id:
                     # other action, ignore
                     print(f"\r  Waiting...", end="")
@@ -63,12 +68,24 @@ class Patrol:
                 raise exceptions.AxException(f"Action {action.id} {planning_state.move_state.value}")
 
     def shutdown(self):
-        self.client.disconnect()
+        self.__client.disconnect()
+
+
+class Options:
+    def __init__(self) -> None:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--url", default="http://localhost:8000")
+
+        args = parser.parse_args()
+
+        self.url = args.url
 
 
 def main():
+    opts = Options()
+
     try:
-        patrol = Patrol()
+        patrol = Patrol(opts.url)
         patrol.run_forever()
     except exceptions.AxException as e:
         print(str(e))
